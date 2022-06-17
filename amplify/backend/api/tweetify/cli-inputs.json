@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "tweetify",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "/Users/jang-yeonji/tweetify/amplify/backend/api/tweetify/schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 7
+    }
+  }
+}
