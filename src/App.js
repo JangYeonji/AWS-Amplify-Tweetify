@@ -18,20 +18,25 @@ function App() {
     } = event;
     setFormData((prev)=>({...prev, [name]:value}));
   };
+
   const [tweets, setTweets] = useState([]);
   const fetchTweets = async () => {
     const request = await API.graphql(graphqlOperation(listTweets));
     setTweets(request.data.listTweets.items);
   };
+  
   const realtimeTweets = ()=>{
     API.graphql(graphqlOperation(onCreateTweet)).subscribe({
       next: ({value:{data}})=>
       setTweets((prev)=> [{...data.onCreateTweet},...prev]),
-    })
-  }
+    });
+  };
+
   useEffect(()=>{
-    fetchTweets()
+    fetchTweets();
+    realtimeTweets();
   },[]);
+
   const onSubmit = async (event) => {
     event.preventDefault();
     await API.graphql(graphqlOperation(createTweet,{input:formData}));
@@ -44,8 +49,8 @@ function App() {
         <h3>Tweet something!</h3>
         <form onSubmit={onSubmit}>
           <input type="text" name="author" placeholder='What is your name?' required onChange={onChange} value={formData.author}/>
-          <textarea name='text' required placeholder='What is on your mind?'></textarea>
-          <button></button>
+          <textarea name='text' required placeholder='What is on your mind?' onChange={onChange} value={formData.text}></textarea>
+          <button>Post</button>
         </form>
       </section>
       <hr/>
@@ -63,22 +68,6 @@ function App() {
         </div>
       </section>
     </main>
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
   );
 }
 
