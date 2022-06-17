@@ -5,6 +5,7 @@ import {useEffect, useState } from "react";
 import {API, graphqlOperation} from "aws-amplify";
 import {listTweets} from "./graphql/queries";
 import {createTweet} from "./graphql/mutations";
+import {onCreateTweet} from "./graphql/subscriptions";
 
 function App() {
   const [formData, setFormData] = useState({
@@ -22,15 +23,26 @@ function App() {
     const request = await API.graphql(graphqlOperation(listTweets));
     setTweets(request.data.listTweets.items);
   };
+  const realtimeTweets = ()=>{
+    API.graphql(graphqlOperation(onCreateTweet)).subscribe({
+      next: ({value:{data}})=>
+      setTweets((prev)=> [{...data.onCreateTweet},...prev]),
+    })
+  }
   useEffect(()=>{
     fetchTweets()
   },[]);
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    await API.graphql(graphqlOperation(createTweet,{input:formData}));
+    setFormData((prev)=>({...prev, text:""}));
+  }
   return (
     <main className='container'>
       <h1>Tweetify!</h1>
       <section>
         <h3>Tweet something!</h3>
-        <form>
+        <form onSubmit={onSubmit}>
           <input type="text" name="author" placeholder='What is your name?' required onChange={onChange} value={formData.author}/>
           <textarea name='text' required placeholder='What is on your mind?'></textarea>
           <button></button>
